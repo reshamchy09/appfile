@@ -1,0 +1,193 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Download App</title>
+  <style>
+    :root{
+      --bg:#f6f8fa;
+      --card:#ffffff;
+      --accent:#2b6ef6;
+      --muted:#6b7280;
+    }
+    body{
+      margin:0;
+      font-family:Inter, "Segoe UI", Roboto, Arial, sans-serif;
+      background:var(--bg);
+      color:#111827;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      min-height:100vh;
+      padding:24px;
+    }
+    .container{
+      width:100%;
+      max-width:820px;
+      background:var(--card);
+      border-radius:12px;
+      box-shadow:0 8px 30px rgba(16,24,40,0.08);
+      padding:28px;
+    }
+    header{
+      display:flex;
+      align-items:center;
+      gap:16px;
+    }
+    .logo{
+      width:56px;
+      height:56px;
+      border-radius:12px;
+      background:linear-gradient(135deg,#4f46e5,#06b6d4);
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      color:white;
+      font-weight:700;
+      font-size:20px;
+    }
+    h1{ margin:0; font-size:20px; }
+    p.lead{ color:var(--muted); margin:8px 0 18px; }
+    .cards{ display:grid; gap:12px; margin-top:12px; }
+    .card{
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:12px;
+      padding:14px;
+      border-radius:10px;
+      background:linear-gradient(180deg, rgba(255,255,255,1), rgba(250,250,250,1));
+      border:1px solid rgba(15,23,42,0.04);
+    }
+    .meta{ display:flex; gap:12px; align-items:center; }
+    .file-icon{ width:48px; height:48px; border-radius:8px; background:#eef2ff; display:flex; align-items:center; justify-content:center; font-weight:700; color:#4338ca; }
+    .file-info{ min-width:0; }
+    .file-name{ font-weight:600; font-size:15px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+    .file-sub{ font-size:13px; color:var(--muted); margin-top:4px; }
+    .actions{ display:flex; gap:10px; align-items:center; }
+    .btn{
+      padding:10px 14px;
+      border-radius:9px;
+      border:0;
+      cursor:pointer;
+      font-weight:600;
+      font-size:14px;
+      background:var(--accent);
+      color:white;
+      box-shadow:0 6px 18px rgba(43,110,246,0.12);
+    }
+    .btn.secondary{
+      background:transparent;
+      border:1px solid rgba(15,23,42,0.06);
+      color:#111827;
+      box-shadow:none;
+    }
+    .note{ font-size:13px; color:var(--muted); margin-top:12px; }
+    .small{ font-size:12px; color:var(--muted); }
+  </style>
+</head>
+<body>
+  <main class="container" role="main">
+    <header>
+      <div class="logo">APP</div>
+      <div>
+        <h1>Download our App</h1>
+        <p class="lead">Click the button to download the installer. Files are served from the <code>app/</code> folder.</p>
+      </div>
+    </header>
+
+    <!-- ********** Replace file names below with your actual filenames inside app/ ********** -->
+    <section class="cards" id="fileList">
+      <!-- Example card for APK -->
+      <div class="card">
+        <div class="meta">
+          <div class="file-icon">APK</div>
+          <div class="file-info">
+            <div class="file-name">myapp.apk</div>
+            <div class="file-sub">Android Package - version 1.0 • <span id="size-app-debug.apk" class="small">checking size…</span></div>
+          </div>
+        </div>
+
+        <div class="actions">
+          <!-- Anchor with download attribute -->
+          <a class="btn" id="dl-myapp.apk" href="app/app-debug.apk" download="app-debug.apk">Download APK</a>
+          <button class="btn secondary" onclick="openInNewTab('app/myapp.apk')">Open</button>
+        </div>
+      </div>
+
+      <!-- Another example (zip) -->
+      <div class="card">
+        <div class="meta">
+          <div class="file-icon">ZIP</div>
+          <div class="file-info">
+            <div class="file-name">myapp.zip</div>
+            <div class="file-sub">Compressed installer • <span id="size-myapp.zip" class="small">checking size…</span></div>
+          </div>
+        </div>
+
+        <div class="actions">
+          <a class="btn" id="dl-myapp.zip" href="app/myapp.zip" download="myapp.zip">Download ZIP</a>
+          <button class="btn secondary" onclick="openInNewTab('app/myapp.zip')">Open</button>
+        </div>
+      </div>
+    </section>
+
+    <p class="note">
+      Tip: If your APK doesn't install on some Android devices, the user must allow installation from unknown sources. Also, for iOS you cannot install `.ipa` by simple HTTP link unless using TestFlight or enterprise provisioning.
+    </p>
+  </main>
+
+  <script>
+    // Helper to open a file in a new tab
+    function openInNewTab(href){
+      window.open(href, '_blank', 'noopener');
+    }
+
+    // Try to fetch HEAD to show file size if the server supports it.
+    // If server does not allow HEAD or returns CORS error, the size will stay "unknown".
+    const files = [
+      { path: 'app/app-debug.apk.apk', id: 'size-app-debug.apk' },
+      { path: 'app/app-debug.zip', id: 'size-app-debug.zip' }
+    ];
+
+    function formatBytes(bytes) {
+      if (!bytes || bytes === 0) return '0 B';
+      const k = 1024;
+      const sizes = ['B','KB','MB','GB','TB'];
+      const i = Math.floor(Math.log(bytes) / Math.log(k));
+      return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
+    }
+
+    files.forEach(file => {
+      // Use HEAD request if possible
+      fetch(file.path, { method: 'HEAD' })
+        .then(response => {
+          if (!response.ok) throw new Error('no head');
+          const len = response.headers.get('content-length');
+          if (len) {
+            document.getElementById(file.id).textContent = formatBytes(parseInt(len, 10));
+          } else {
+            // Fallback: try GET with range to minimize payload
+            return fetch(file.path, { method: 'GET', headers: { Range: 'bytes=0-0' }});
+          }
+        })
+        .then(resp => {
+          if (resp && resp.ok) {
+            const cl = resp.headers.get('content-range'); // like bytes 0-0/12345
+            if (cl) {
+              const total = cl.split('/')[1];
+              if (total) document.getElementById(file.id).textContent = formatBytes(parseInt(total,10));
+            } else {
+              document.getElementById(file.id).textContent = 'unknown size';
+            }
+          }
+        })
+        .catch(err => {
+          // Server might block HEAD or CORS; show friendly fallback
+          document.getElementById(file.id).textContent = 'unknown size';
+        });
+    });
+  </script>
+</body>
+</html>
